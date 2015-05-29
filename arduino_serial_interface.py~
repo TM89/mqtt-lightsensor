@@ -1,0 +1,28 @@
+import serial
+import os
+import paho.mqtt.client as paho
+
+prev_value = 0
+client = paho.Client()
+
+def publish(message):
+	print 'publishing'
+	published_message = 'mosquitto_pub -d -t ubuntu/arduino_light -m "'+message+'"'
+	
+	print published_message
+	os.system(published_message)
+	print 'done publishing!'
+
+ser = serial.Serial('/dev/ttyUSB0',9600)
+
+while True:
+	value = 0
+	value = ser.readline()
+	print value
+	
+	if int(value) < prev_value-10 or int(value) > prev_value+10:
+		prev_value = int(value)
+		message = 'light:'+value
+		publish(message)
+	
+
